@@ -8,6 +8,9 @@ import 'package:sies_gst_notes/TEsem1.dart';
 import 'package:sies_gst_notes/TEsem2.dart';
 import 'package:sies_gst_notes/Besem1.dart';
 import 'package:sies_gst_notes/BEsem2.dart';
+import 'package:sies_gst_notes/addlec.dart';
+import 'package:sies_gst_notes/addabsenties.dart';
+
 
 class Mydashboard extends StatefulWidget {
   const Mydashboard({super.key});
@@ -48,7 +51,7 @@ class _MydashboardState extends State<Mydashboard> {
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) => const FEsem1())),
+                            .push(MaterialPageRoute(builder: (context) => const Addlecs() )),
                         child: Text('Sem 1'),
 
                       ),

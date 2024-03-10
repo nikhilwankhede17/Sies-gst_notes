@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sies_gst_notes/dashboard.dart';
 import 'package:sies_gst_notes/register.dart';
+import 'package:sies_gst_notes/addlec.dart';
+import 'package:sies_gst_notes/addabsenties.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -10,41 +14,34 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  void login() async {
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
-  void _login(BuildContext context) {
-    // Replace this with your authentication logic
-    String email = _emailController.text;
-    String password = _passwordController.text;
+    if(email == "" || password == "") {
+      log("Please fill all the fields!");
+    }
+    else {
 
-    // Example: Hardcoded credentials for demonstration purposes
-    String correctEmail = 'Hello';
-    String correctPassword = 'psd';
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        if(userCredential.user != null) {
 
-    if (email == correctEmail && password == correctPassword) {
-      // Navigate to dashboard if credentials are correct
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Mydashboard()),
-      );
-    } else {
-      // Show error message if credentials are incorrect
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Login Failed'),
-          content: Text('Incorrect email or password. Please try again.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+        Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => Mydashboard(),
             ),
-          ],
-        ),
-      );
+          );
+
+        }
+      } on FirebaseAuthException catch(ex) {
+        log(ex.code.toString());
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +84,7 @@ class _MyLoginState extends State<MyLogin> {
                         child: Column(
                           children: [
                             TextField(
-                              controller: _emailController,
+                              controller: emailController,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
@@ -100,7 +97,7 @@ class _MyLoginState extends State<MyLogin> {
                             ),
                             SizedBox(height: 30),
                             TextField(
-                              controller: _passwordController,
+                              controller: passwordController,
                               style: TextStyle(),
                               obscureText: true,
                               decoration: InputDecoration(
@@ -120,9 +117,13 @@ class _MyLoginState extends State<MyLogin> {
                                     'Sign in',
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  onPressed: () => _login(context),
+                                  onPressed: () {
+                                    login();
+
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     primary: Colors.blue,
+
                                     fixedSize: Size(350.0, 50.0),
                                   ),
                                 ),

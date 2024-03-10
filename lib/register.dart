@@ -1,6 +1,9 @@
+import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sies_gst_notes/dashboard.dart';
 import 'package:sies_gst_notes/login.dart';
+
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -10,6 +13,28 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
+TextEditingController nameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+
+void createAccount() async{
+String name= nameController.text.trim();
+String email= emailController.text.trim();
+String password= passwordController.text.trim();
+if(name == "" || password == "" || email == "") {
+  log("Please fill all the details!");
+}
+else {
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword( email: email, password: password);
+    if(userCredential.user != null) {
+      Navigator.pop(context);
+    }
+  } on FirebaseAuthException catch(ex) {
+    log(ex.code.toString());
+  }
+}
+}
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,6 +69,7 @@ class _MyRegisterState extends State<MyRegister> {
                       child: Column(
                         children: [
                           TextField(
+                            controller: nameController,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
@@ -70,6 +96,7 @@ class _MyRegisterState extends State<MyRegister> {
                             height: 30,
                           ),
                           TextField(
+                            controller: emailController,
                             style: TextStyle(color: Colors.black
                             ),
                             decoration: InputDecoration(
@@ -97,6 +124,7 @@ class _MyRegisterState extends State<MyRegister> {
                             height: 30,
                           ),
                           TextField(
+                            controller: passwordController,
                             style: TextStyle(color: Colors.black),
                             obscureText: true,
                             decoration: InputDecoration(
@@ -185,8 +213,7 @@ class _MyRegisterState extends State<MyRegister> {
                               children:[
                                 ElevatedButton(
                                   child: const Text('Sign up',style: TextStyle(color: Colors.white),),
-                                  onPressed: ()  => Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => const MyLogin())),
+                                  onPressed: ()  {createAccount();},
                                   style: ElevatedButton.styleFrom(
                                     primary: Colors.blue,
                                     fixedSize: Size(350.0, 50.0), // Set the desired width and height
@@ -249,3 +276,4 @@ class _MyRegisterState extends State<MyRegister> {
 
   }
 }
+
