@@ -16,145 +16,124 @@ class MyLogin extends StatefulWidget {
 class _MyLoginState extends State<MyLogin> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
   void login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
-    if(email == "" || password == "") {
+    if (email == "" || password == "") {
       log("Please fill all the fields!");
-    }
-    else {
-
+    } else {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-        if(userCredential.user != null) {
-
-        Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => Mydashboard(),
-            ),
-          );
-
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        if (userCredential.user != null) {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => Mydashboard()));
         }
-      } on FirebaseAuthException catch(ex) {
+      } on FirebaseAuthException catch (ex) {
         log(ex.code.toString());
       }
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/theme3.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Stack(
+      backgroundColor: Color(0xFF222224),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.only(left: 95, top: 120),
-                child: Text(
-                  'SIES GST\n  NOTES',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 70,
-                    fontWeight: FontWeight.w900,
-                    decoration: TextDecoration.none,
-                  fontFamily: 'Teko',
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/loginnew.png'),
+                    // fit: BoxFit.cover,
                   ),
                 ),
               ),
-              SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
-                child: Container(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.4,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 35, right: 35),
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: emailController,
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "Email",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 30),
-                            TextField(
-                              controller: passwordController,
-                              style: TextStyle(),
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                hintText: "Password",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 40),
-                            Column(
-                              children: [
-                                ElevatedButton(
-                                  child: const Text(
-                                    'Sign in',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () {
-                                    login();
-
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue,
-
-                                    fixedSize: Size(350.0, 50.0),
-                                  ),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  'OR',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                SizedBox(height: 20),
-                                ElevatedButton(
-                                  child: const Text(
-                                    'Create a new account',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  onPressed: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => MyRegister(),
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.green,
-                                    fixedSize: Size(300.0, 50.0),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 250),
+                    Text(
+                      'Login Here', // New text added here
+                      style: TextStyle(
+                        color: Color(0xFFc79756),
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: emailController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.email_outlined),
+                        suffixIconColor: Colors.white,
+                        hintText: "Email",
+                        hintStyle: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      obscureText: true,
+                      controller: passwordController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.password_outlined),
+                        suffixIconColor: Colors.white,
+                        hintText: "Password",
+                        hintStyle: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      child: const Text(
+                        'Sign in',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () {
+                        login();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFeccb50),
+                        fixedSize: Size(350.0, 50.0),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      'OR',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      child: const Text(
+                        'Create a new account',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MyRegister(),
                         ),
                       ),
-                    ],
-                  ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFeccb70),
+                        fixedSize: Size(300.0, 50.0),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

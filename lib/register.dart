@@ -13,54 +13,97 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
-TextEditingController nameController = TextEditingController();
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
-void createAccount() async{
-String name= nameController.text.trim();
-String email= emailController.text.trim();
-String password= passwordController.text.trim();
-if(name == "" || password == "" || email == "") {
-  log("Please fill all the details!");
-}
-else {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword( email: email, password: password);
-    if(userCredential.user != null) {
-      Navigator.pop(context);
+  void createAccount() async {
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      // Show an error message if any field is empty
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Error"),
+          content: Text("Please fill all the details!"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return; // Exit the method if any field is empty
     }
-  } on FirebaseAuthException catch(ex) {
-    log(ex.code.toString());
+
+    try {
+      UserCredential userCredential =
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // User created successfully
+      print("User created successfully: ${userCredential.user?.email}");
+
+      // Navigate back if user created successfully
+      if (userCredential.user != null) {
+        Navigator.pop(context);
+      }
+    } catch (e, stackTrace) {
+      // An error occurred during account creation
+      print("Error creating user: $e");
+      print("StackTrace: $stackTrace");
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Color(0xFFe1d5c9),
+          title: Text("Error"),
+          content: Text(
+              "An error occurred while creating the account. Please try again later."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
-}
-}
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/theme3.jpg'), fit: BoxFit.cover),
-      ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
+        backgroundColor: Color(0xFF222224),
         body: Stack(
           children: [
             Container(
-              padding: EdgeInsets.only(left:50, top:90),
+              margin: EdgeInsets.only(top: 0, bottom: 0, right: 0),
+              height: 200,
+              width: 400,
+              decoration: BoxDecoration(
+                color: Color(0xFFe1d5c9),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(80),
+                  bottomRight: Radius.circular(80),
+                ),
+              ),
+              padding: EdgeInsets.only(left: 50, top: 90),
               child: Text(
                 '    Create  Account',
-                style: TextStyle(color: Colors.white, fontSize: 50,   fontFamily: 'Teko',),
+                style: TextStyle(
+                    color: Color(0xFF222224), fontSize: 50, fontFamily: 'Teko'),
               ),
             ),
             SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.28),
+                    top: MediaQuery.of(context).size.height * 0.32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -70,210 +113,95 @@ else {
                         children: [
                           TextField(
                             controller: nameController,
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.white),
+                            // obscureText: true,
                             decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                hintText: "Name",
-                                hintStyle: TextStyle(color: Colors.black),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
+                              suffixIcon: Icon(Icons.people_outline),
+                              suffixIconColor: Colors.white,
+                              hintText: "Name",
+                              hintStyle: TextStyle(color: Colors.white),
+                            ),
                           ),
                           SizedBox(
                             height: 30,
                           ),
                           TextField(
                             controller: emailController,
-                            style: TextStyle(color: Colors.black
-                            ),
+                            style: TextStyle(color: Colors.white),
+                            // obscureText: true,
                             decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                hintText: "Email",
-                                hintStyle: TextStyle(color: Colors.black),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
+                              suffixIcon: Icon(Icons.email_outlined),
+                              suffixIconColor: Colors.white,
+                              hintText: "Email",
+                              hintStyle: TextStyle(color: Colors.white),
+                            ),
                           ),
                           SizedBox(
                             height: 30,
                           ),
                           TextField(
                             controller: passwordController,
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.white),
                             obscureText: true,
                             decoration: InputDecoration(
-                                fillColor: Colors.grey.shade100,
-                                filled: true,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.black),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
+                              suffixIcon: Icon(Icons.password_outlined),
+                              suffixIconColor: Colors.white,
+                              hintText: "Password",
+                              hintStyle: TextStyle(color: Colors.white),
+                            ),
                           ),
                           SizedBox(
                             height: 40,
                           ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     Text(
-                          //       'Sign Up',
-                          //       style: TextStyle(
-                          //           color: Colors.white,
-                          //           fontSize: 27,
-                          //           fontWeight: FontWeight.w700),
-                          //     ),
-                          //     CircleAvatar(
-                          //       radius: 30,
-                          //       backgroundColor: Color(0xff4c505b),
-                          //       child: IconButton(
-                          //           color: Colors.white,
-                          //           onPressed: () {},
-                          //           icon: Icon(
-                          //             Icons.arrow_forward,
-                          //           )),
-                          //     )
-                          //   ],
-                          // ),
-                          SizedBox(
-                            height: 10,
-                          ),
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                             children: [
-//                               TextButton(
-//                                 onPressed: () {
-//                                   Navigator.pushNamed(context, 'login');
-//                                 },
-//                                 child: Text(
-//                                   'Sign In',
-//                                   textAlign: TextAlign.left,
-//                                   style: TextStyle(
-//                                       decoration: TextDecoration.underline,
-//                                       color: Colors.white,
-//                                       fontSize: 18),
-//                                 ),
-//                                 style: ButtonStyle(),
-//                               ),
-//                             ],
-//                           )
-//                         ],
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
                           Column(
+                            children: [
+                              ElevatedButton(
+                                child: const Text('Sign up',
+                                    style: TextStyle(color: Colors.black)),
+                                onPressed: () {
+                                  createAccount();
+                                },
+                                // Navigator.of(context).push(
+                                //     MaterialPageRoute(
+                                //         builder: (context) => const MyLogin())),
 
-                              children:[
-                                ElevatedButton(
-                                  child: const Text('Sign up',style: TextStyle(color: Colors.white),),
-                                  onPressed: ()  {createAccount();},
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue,
-                                    fixedSize: Size(350.0, 50.0), // Set the desired width and height
-                                  ),
-
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFeccb50),
+                                  fixedSize: Size(350.0,
+                                      50.0), // Set the desired width and height
                                 ),
-                                SizedBox(
-                                  height: 20,
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text('OR', style: TextStyle(color: Colors.white)),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                child: const Text('Sign in',
+                                    style: TextStyle(color: Colors.black)),
+                                onPressed: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>  MyLogin())),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFFeccb69),
+                                  fixedSize: Size(300.0,
+                                      50.0), // Set the desired width and height
                                 ),
-
-
-
-                                Text ('OR',style: TextStyle(color: Colors.white),),
-                                SizedBox(
-                                  height: 20,
-                                ),
-
-
-                                ElevatedButton(
-                                  child: const Text('Sign in',style: TextStyle(color: Colors.white),),
-                                  onPressed: ()  => Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => const MyLogin())),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.green,
-                                    fixedSize: Size(300.0, 50.0), // Set the desired width and height
-                                  ),
-
-                                ),
-
-                              ]
-                          )
-
-
-
-
-
-
-
-
-                        ],  )
-
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    //   ),
-                  ],  ),
-
+                  ],
+                ),
               ),
             ),
-            //),
-
-          ]
-        )
-      )
+          ],
+        ),
+      ),
     );
-
-
-
-
-
-
-
   }
 }
-

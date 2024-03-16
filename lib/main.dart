@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sies_gst_notes/introduction.dart';
 import 'firebase_options.dart';
 import 'package:sies_gst_notes/login.dart';
 import 'package:sies_gst_notes/register.dart';
@@ -16,140 +17,96 @@ import 'package:sies_gst_notes/TEsem2.dart';
 import 'package:sies_gst_notes/Besem1.dart';
 import 'package:sies_gst_notes/BEsem2.dart';
 import 'package:sies_gst_notes/addlec.dart';
+import 'package:sies_gst_notes/addlecCHEM.dart';
+import 'package:sies_gst_notes/addlecMATHS.dart';
+import 'package:sies_gst_notes/addlecCP.dart';
+import 'package:sies_gst_notes/addlecEG.dart';
+
+import 'package:sies_gst_notes/addlecPCCOE.dart';
 import 'package:sies_gst_notes/addabsenties.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: FirebaseOptions(apiKey: "AIzaSyDkemw83ua7BkYdCYEzzLv3A5zdDH8yWuM", appId: "1:570983632012:android:257ab1415b64c4beda3fa9", messagingSenderId: "570983632012", projectId: "sies-gst-app")
+
   );
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-
-
-
-      // 'register': (context) => MyRegister(),
-     home:(FirebaseAuth.instance.currentUser != null ) ? MyLogin(): Mydashboard(),
-
-  ));
+  runApp(MyApp());
 }
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter Demo',
-//       theme: ThemeData(
-//         // This is the theme of your application.
-//         //
-//         // TRY THIS: Try running your application with "flutter run". You'll see
-//         // the application has a purple toolbar. Then, without quitting the app,
-//         // try changing the seedColor in the colorScheme below to Colors.green
-//         // and then invoke "hot reload" (save your changes or press the "hot
-//         // reload" button in a Flutter-supported IDE, or press "r" if you used
-//         // the command line to start the app).
-//         //
-//         // Notice that the counter didn't reset back to zero; the application
-//         // state is not lost during the reload. To reset the state, use hot
-//         // restart instead.
-//         //
-//         // This works for code too, not just values: Most code changes can be
-//         // tested with just a hot reload.
-//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-//         useMaterial3: true,
+class MyApp extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'My App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: FutureBuilder(
+        future: _checkFirstTimeUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If it's the first time, show the login page
+            if (snapshot.data == true) {
+              return MyLogin();
+            } else {
+              // Otherwise, show the dashboard page
+              return Introduction();
+            }
+          } else {
+            // Show a loading indicator while checking the first-time user
+            return CircularProgressIndicator();
+          }
+        },
+      ),
+    );
+  }
+
+  Future<bool> _checkFirstTimeUser() async {
+    // Check if the user is a first-time user based on your criteria
+    // (e.g., checking if there's login data stored in Firebase)
+    User? user = _auth.currentUser;
+
+    if (user == null) {
+      // If the user is null, consider it as a first-time user
+      return true;
+    } else {
+      // If the user is not null, they have login data
+      return false;
+    }
+  }
+}
+//       home: FutureBuilder(
+//         future: checkFirstTimeUser(),
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return CircularProgressIndicator(); // or a loading indicator
+//           } else {
+//             if (snapshot.data == true) {
+//               return MyLogin();
+//             } else {
+//               return Mydashboard();
+//             }
+//           }
+//         },
 //       ),
-//       home: const MyHomePage(title: 'Flutter Demo Home Page'),
 //     );
 //   }
-// }
 //
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key, required this.title});
+//   Future<bool> checkFirstTimeUser() async {
+//     // Check if user is logged in
+//     User? user = _auth.currentUser;
 //
-//   // This widget is the home page of your application. It is stateful, meaning
-//   // that it has a State object (defined below) that contains fields that affect
-//   // how it looks.
-//
-//   // This class is the configuration for the state. It holds the values (in this
-//   // case the title) provided by the parent (in this case the App widget) and
-//   // used by the build method of the State. Fields in a Widget subclass are
-//   // always marked "final".
-//
-//   final String title;
-//
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _counter = 5;
-//
-//   void _incrementCounter() {
-//     setState(() {
-//       // This call to setState tells the Flutter framework that something has
-//       // changed in this State, which causes it to rerun the build method below
-//       // so that the display can reflect the updated values. If we changed
-//       // _counter without calling setState(), then the build method would not be
-//       // called again, and so nothing would appear to happen.
-//       _counter--;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // This method is rerun every time setState is called, for instance as done
-//     // by the _incrementCounter method above.
-//     //
-//     // The Flutter framework has been optimized to make rerunning build methods
-//     // fast, so that you can just rebuild anything that needs updating rather
-//     // than having to individually change instances of widgets.
-//     return Scaffold(
-//       appBar: AppBar(
-//         // TRY THIS: Try changing the color here to a specific color (to
-//         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-//         // change color while the other colors stay the same.
-//         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-//         // Here we take the value from the MyHomePage object that was created by
-//         // the App.build method, and use it to set our appbar title.
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         // Center is a layout widget. It takes a single child and positions it
-//         // in the middle of the parent.
-//         child: Column(
-//           // Column is also a layout widget. It takes a list of children and
-//           // arranges them vertically. By default, it sizes itself to fit its
-//           // children horizontally, and tries to be as tall as its parent.
-//           //
-//           // Column has various properties to control how it sizes itself and
-//           // how it positions its children. Here we use mainAxisAlignment to
-//           // center the children vertically; the main axis here is the vertical
-//           // axis because Columns are vertical (the cross axis would be
-//           // horizontal).
-//           //
-//           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-//           // action in the IDE, or press "p" in the console), to see the
-//           // wireframe for each widget.
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             const Text(
-//               'You have pushed the button this many times:',
-//             ),
-//             Text(
-//               '$_counter',
-//               style: Theme.of(context).textTheme.headlineMedium,
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _incrementCounter,
-//         tooltip: 'Increment',
-//         child: const Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
+//     if (user != null) {
+//       // User is not first-time user
+//       // Perform additional checks if needed, e.g., fetch data from Firebase
+//       return false;
+//     } else {
+//       // User is a first-time user
+//       return true;
+//     }
 //   }
 // }
